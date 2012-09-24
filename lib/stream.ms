@@ -1,13 +1,13 @@
 export class Stream {
-  function initialize(socket) {
-    this.socket = socket;
+  function initialize(cmd, room) {
+    this.room = room;
   }
 
   function write(msg) {
-    this.socket.emit('cmd-receive', { msg: msg });
+    this.room.sockets.emit('cmd-receive', { msg: msg });
   }
 
   function end(msg) {
-    if (msg) this.socket.emit('cmd-receive', { msg: msg });
+    if (msg) this.room.sockets.emit('cmd-receive', { msg: msg });
   }
 }
