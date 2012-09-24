@@ -22,11 +22,11 @@ class Room {
     END
 
     var cmdReceive = jade.compile(<<END);
-      pre.cmd-receive(class="cmd-#{cmdId}")= msg
+      pre.cmd-receive(class="cmd-#{cmdId}")!= msg
     END
 
     var cmdError = jade.compile(<<END);
-      pre.cmd-error.text-error(class="cmd-#{cmdId}")= msg
+      pre.cmd-error.text-error(class="cmd-#{cmdId}")!= msg
     END
 
 
@@ -34,12 +34,12 @@ class Room {
       div
         if username
           i.username= username + ': '
-        span.receive!= html
+        span.receive!= msg
     END
 
     var cmdExecuted = jade.compile(<<END);
       div.cmd-executed(data-cmdid=cmdId)
-        a= msg
+        a!= msg
     END
   }
 
@@ -116,8 +116,6 @@ class Room {
   }
 
   function receive(data) {
-    data.html = this.escapeHTML(data.msg);
-    data.html = data.html.replace(/#(\d+)/g, '<a href="https://github.com/Factual/front/issues/$1">#$1</a>');
     this.$pane.append(receive(data));
   }
 }
