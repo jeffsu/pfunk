@@ -7,7 +7,7 @@ function cmd(msg, stream, transposer) {
 
 module.exports = function (room, verifier, transposer) {
   room.plugin({
-    canHandle: verifier,
-    handle: function (msg, stream) { cmd(msg, stream, transposer) }
+    canHandle: function (msg) { return msg.match(verifier) },
+    handle:    function (msg, stream) { cmd(msg, stream, transposer) }
   });
 };

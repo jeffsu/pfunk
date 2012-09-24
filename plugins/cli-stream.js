@@ -16,9 +16,9 @@ function kill(cmdId) {
 
 module.exports = function (room, verifier, transposer) {
   room.plugin({
-    canHandle: verifier,
-    handle:   function (msg, stream) { cmd(msg, stream, transposer) },
-    kill:     kill
+    canHandle: function (msg) { return msg.match(verifier) },
+    handle:    function (msg, stream) { cmd(msg, stream, transposer) },
+    kill:      kill
   });
 };
 
