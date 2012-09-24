@@ -1,68 +1,81 @@
-class App {
-  function initialize(host, port) {
-    var serverAddress = host + ':' + port;
-    var socket = io.connect(serverAddress);
+var $s;
 
-    this.messenger = new Messenger(socket);
-
-    socket.on('connected', function(data) {
-      self.messenger.writeln(data);
-    });
-
-    socket.on('receive', function(data) {
-      self.messenger.writeln(data);
-    });
-
-    socket.on('cmd-receive', function(data) {
-      self.messenger.writeln(data);
-    });
-
-    socket.emit('join', { room: 'front' });
+class Room {
+  private {
+    var template = jade.compile(<<END);
+      .room
+        h3= name
+        .pane
+        .form
+          input(type='text')
+    END
   }
-}
 
-class Messenger {
-  function initialize(socket) {
-    this.socket = socket;
-    this.$msgPane = $('#msgPane');
-    this.$msgPost = $('#msgPost');
-    this.$msgLine = $('<div class="msgLine"></div>');
-    this.$msgInput= this.$msgPost.find('input');
-    this.$msgSend = this.$msgPost.find('button');
-    
-    this.registerEvents();
-  }
-  
-  function registerEvents() {
-    this.$msgInput.keypress(#(e) {
-      if (e.which == 13) self.processInput();
+  function initialize(name) {
+    this.name = name;
+
+    this.$ = $(template(this));
+    this.$pane = this.$.find('.pane');
+    this.$form = this.$.find('.form');
+    this.$input = this.$.find('input');
+    $('#rooms').append(this.$);
+
+    this.$input.keypress(#(e) {
+      if (e.which == 13) 
+        self.processInput();
     });
-
-    this.$msgSend.click(#{ self.processInput(); });
   }
 
   function processInput() {
-    var msg = this.$msgInput.val();
-    var m = msg.match(/^\!\s+(.*)$/);
+    var val = this.$input.val();
+    var m = val.match(/^\!\s+(.*)$/);
     if (m) {
       this.cmd(m[1]);
     } else {
-      this.send(msg)
+      this.send(val)
     }
 
-    this.$msgInput.val('');
-  }
-
-  function cmd(cmd) {
-    this.socket.emit('cmd', { msg: cmd.trim(), room: 'front' });
+    this.$input.val('');
   }
 
   function send(msg) {
-    this.socket.emit('say', { msg: msg, room: 'front' });
+    $s.emit('say', { room: this.name, msg: msg });
   }
 
-  function writeln(data) {
-    var msgLine = this.$msgLine.clone().html(data.msg);
-    this.$msgPane.append(msgLine);
+  function cmd(msg) {
+    $s.emit('cmd', { room: this.name, msg: msg });
+  }
+
+  function cmdReceive(cmd) {
+    var $div = $('<div class="cmd" />').html(msg);
+    this.$pane.append($div);
+  }
+
+  function receive(msg) {
+    var $div = $('<div />').html(msg);
+    this.$pane.append($div);
   }
 }
+
+class App {
+  function initialize(host, port) {
+    this.rooms = {};
+    var serverAddress = host + ':' + port;
+    $s = io.connect(serverAddress);
+
+    $s.on('connected', function(data) { console.log('connected') });
+
+    $s.on('receive', function(data) {
+      var room = self.rooms[data.room];
+      room.receive(data.msg);
+    });
+
+    $('#join').change(#{
+      var name = this.value;
+      $s.emit('join', { room: name });
+      self.rooms[name] = new Room(name);
+      this.selectedIndex = 0;
+    });
+  }
+}
+
