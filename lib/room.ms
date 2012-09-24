@@ -1,11 +1,11 @@
 export class Room {
-  function initialize(name, sroom) {
-    this.socket = sroom;
-    this.name   = name;
+  function initialize(name, sockets) {
+    this.sockets = sockets;
+    this.name    = name;
   }
 
   function say(data) {
-    this.socket.emit('receive', data);
+    this.sockets.in(this.name).emit('receive', data);
   }
 
 }

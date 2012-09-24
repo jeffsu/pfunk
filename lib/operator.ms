@@ -8,15 +8,16 @@ export class Operator {
   }
 
   function addRoom(name) {
-    return this.rooms[name] = new Room(name, this.io.sockets.in(name));
+    return this.rooms[name] = new Room(name, this.io.sockets);
   }
 
   function setupIO(app, io) {
     io.sockets.on('connection', function(socket) {
       socket.emit('connected', { msg: 'listening' });
 
+      socket.on('join', #(data) { socket.join(data.room); });
+
       socket.on('say', function(data) {
-      console.log('say', data);
         var room = self.getRoom(data.room);
         room.say(data);
       });
@@ -25,11 +26,5 @@ export class Operator {
 
   function getRoom(name) {
     return this.rooms[name];
-  }
-
-
-  function join(room) {
-    if (room in rooms) {
-    }
   }
 } 

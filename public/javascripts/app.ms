@@ -12,6 +12,8 @@ class App {
     socket.on('receive', function(data) {
       self.messenger.writeln(data);
     });
+
+    socket.emit('join', { room: 'front' });
   }
 }
 
@@ -28,23 +30,31 @@ class Messenger {
   }
   
   function registerEvents() {
-    this.$msgInput.keypress(function(e) {
-      if (e.which == 13) self.send();
+    this.$msgInput.keypress(#(e) {
+      if (e.which == 13) self.processInput();
     });
 
-    this.$msgSend.click(function() {
-      var msg = self.$msgInput.val();
-      self.$msgInput.val('');
-      self.send(msg)
-    });
+    this.$msgSend.click(#{ self.processInput(); });
+  }
+
+  function processInput() {
+    var msg = this.$msgInput.val();
+    var m = msg.match(/^\!\s+(.*)$/);
+    if (m) {
+      this.cmd(m[1]);
+    } else {
+      this.send(msg)
+    }
+
+    this.$msgInput.val('');
+  }
+
+  function cmd(cmd) {
+    this.socket.emit('cmd', cmd.trim());
   }
 
   function send(msg) {
     this.socket.emit('say', { msg: msg, room: 'front' });
-  }
-
-  function cmd(msg) {
-
   }
 
   function writeln(data) {
