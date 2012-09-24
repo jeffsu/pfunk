@@ -6,11 +6,16 @@ export class Room {
     this.plugins = [];
   }
 
+  function socket() {
+    return this.sockets.in(this.name);j
+  }
+
   function say(data) {
-    this.sockets.in(this.name).emit('receive', data);
+    this.socket().emit('receive', data);
   }
 
   function cmd(data) {
+    this.socket().emit('cmd-executed', data);
     var stream = new Stream(self);
     foreach (var plugin in this.plugins) {
       if (plugin.canHandle(data.msg)) {

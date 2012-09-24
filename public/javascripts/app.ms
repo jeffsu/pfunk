@@ -22,8 +22,15 @@ class Room {
     END
 
     var receive = jade.compile(<<END);
-      i.username= username + ':'
-      .receive= msg
+      div
+        if username
+          i.username= username + ':'
+        span.receive!= html
+    END
+
+    var cmdExecuted = jade.compile(<<END);
+      div.cmd-executed
+        a= msg
     END
   }
 
@@ -31,12 +38,13 @@ class Room {
     this.name = name;
 
     this.$ = $(template(this));
-    this.$pane  = this.$.find('.pane');
-    this.$form  = this.$.find('.form');
-    this.$input = this.$.find('input');
+    this.$pane    = this.$.find('.pane');
+    this.$form    = this.$.find('.form');
+    this.$input   = this.$.find('input');
     this.$cmdPane = this.$.find('.cmd-pane');
 
     var $li = $(tab(this));
+
     $('#room-tabs').append($li);
     $('#rooms').append(this.$);
 
@@ -46,8 +54,7 @@ class Room {
     select();
 
     this.$input.keypress(#(e) {
-      if (e.which == 13) 
-        self.processInput();
+      if (e.which == 13) self.processInput();
     });
   }
 
@@ -76,11 +83,21 @@ class Room {
   }
 
   function cmdReceive(data) {
-    this.$pane.append(cmdReceive(data));
+    this.$cmdPane.append(cmdReceive(data));
+  }
+
+  function cmdExecuted(data) {
+    this.$pane.append(cmdExecuted(data));
+  }
+
+  function escapeHTML(str) {
+    return $('<div />').html(str).text();
   }
 
   function receive(data) {
-    this.$cmdPane.append(receive(data));
+    data.html = this.escapeHTML(data.msg);
+    data.html = data.html.replace(/#(\d+)/g, '<a href="https://github.com/Factual/front/issues/$1">#$1</a>');
+    this.$pane.append(receive(data));
   }
 }
 
@@ -101,6 +118,12 @@ class App {
       var room = self.rooms[data.room];
       room.cmdReceive(data);
     });
+
+    $s.on('cmd-executed', #(data) {
+      var room = self.rooms[data.room];
+      room.cmdExecuted(data);
+    });
+
 
     $('#join').change(#{
       var name = this.value;
