@@ -1,0 +1,14 @@
+h1= title
+p Welcome to #{title}
+.joinRoom
+  p: a(href='front') front
+  p: a(href='data') data
+.messenger
+  #msgPane
+  #msgPost
+    input(type='text')
+    button send
+script(type='text/javascript')
+  var host = 'http://localhost';
+  var port = 3000;
+  var app = new App(host, port);
