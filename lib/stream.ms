@@ -9,6 +9,10 @@ export class Stream {
     this.room.sockets.emit('cmd-receive', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId });
   }
 
+  function writeStream(msg) {
+    this.room.sockets.emit('cmd-stream', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId });
+  }
+
   function end(msg) {
     if (msg) this.room.sockets.emit('cmd-receive', { msg: msg, room: self.room.name, cmdId: this.cmdId });
   }

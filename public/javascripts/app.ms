@@ -25,6 +25,10 @@ class Room {
       pre.cmd-receive(class="cmd-#{cmdId}")!= msg
     END
 
+    var cmdStream = jade.compile(<<END);
+      pre.cmd-stream(class="cmd-stream-#{cmdId}", style="max-height: 200px; overflow: auto")
+    END
+
     var cmdError = jade.compile(<<END);
       pre.cmd-error.text-error(class="cmd-#{cmdId}")!= msg
     END
@@ -96,25 +100,43 @@ class Room {
     this.$pane.animate({ scrollTop: this.$pane[0].scrollHeight });
   }
 
+  function scrollDown($ele) {
+    $ele.animate({ scrollTop: $ele[0].scrollHeight });
+  }
+
   function cmd(msg) {
     $s.emit('cmd', this.newData(msg));
   }
 
   function cmdReceive(data) {
     this.$cmdPane.append(cmdReceive(data));
-    this.$cmdPane.animate({ scrollTop: this.$cmdPane[0].scrollHeight });
+    this.scrollDown(this.$cmdPane);
   }
 
   function cmdError(data) {
     this.$cmdPane.append(cmdError(data));
-    this.$cmdPane.animate({ scrollTop: this.$cmdPane[0].scrollHeight });
+    this.scrollDown(this.$cmdPane);
   }
 
 
   function cmdExecuted(data) {
     this.$pane.append(cmdExecuted(data));
-    this.$pane.animate({ scrollTop: this.$pane[0].scrollHeight });
+    this.scrollDown(this.$pane);
   }
+
+  function cmdStream(data) {
+    var $div = $('.cmd-stream-' + data.cmdId);
+
+    if (!$div.length) {
+      $div = $(cmdStream(data));
+      this.$cmdPane.append($div);
+      this.scrollDown(this.$cmdPane);
+    }
+
+    $div.append(data.msg);
+    this.scrollDown($div);
+  }
+
 
   function escapeHTML(str) {
     return $('<div />').html(str).text();
@@ -122,6 +144,7 @@ class Room {
 
   function receive(data) {
     this.$pane.append(receive(data));
+    this.scrollDown(this.$pane);
   }
 }
 
@@ -158,6 +181,12 @@ class App {
       var room = self.rooms[data.room];
       room.cmdError(data);
     });
+
+    $s.on('cmd-stream', #(data) {
+      var room = self.rooms[data.room];
+      room.cmdStream(data);
+    });
+
 
     $s.on('cmd-executed', #(data) {
       var room = self.rooms[data.room];
