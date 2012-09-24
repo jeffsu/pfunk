@@ -5,9 +5,10 @@ class App {
 
     this.messenger = new Messenger(socket);
 
-    socket.on('connected', function(msg) {
-      self.messenger.writeln(msg);
+    socket.on('connected', function(data) {
+      self.messenger.writeln(data);
     });
+
     socket.on('receive', function(data) {
       self.messenger.writeln(data);
     });
@@ -30,18 +31,24 @@ class Messenger {
     this.$msgInput.keypress(function(e) {
       if (e.which == 13) self.send();
     });
+
     this.$msgSend.click(function() {
-      self.send()
+      var msg = self.$msgInput.val();
+      self.$msgInput.val('');
+      self.send(msg)
     });
   }
 
-  function send() {
-    this.socket.emit('say', { body: self.$msgInput.val() });
-    this.$msgInput.val('');
+  function send(msg) {
+    this.socket.emit('say', { msg: msg, room: 'front' });
+  }
+
+  function cmd(msg) {
+
   }
 
   function writeln(data) {
-    var msgLine = this.$msgLine.clone().html(data.body);
+    var msgLine = this.$msgLine.clone().html(data.msg);
     this.$msgPane.append(msgLine);
   }
 }
