@@ -13,6 +13,10 @@ class App {
       self.messenger.writeln(data);
     });
 
+    socket.on('cmd-receive', function(data) {
+      self.messenger.writeln(data);
+    });
+
     socket.emit('join', { room: 'front' });
   }
 }
@@ -50,7 +54,7 @@ class Messenger {
   }
 
   function cmd(cmd) {
-    this.socket.emit('cmd', cmd.trim());
+    this.socket.emit('cmd', { msg: cmd.trim(), room: 'front' });
   }
 
   function send(msg) {

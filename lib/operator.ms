@@ -21,6 +21,11 @@ export class Operator {
         var room = self.getRoom(data.room);
         room.say(data);
       });
+
+      socket.on('cmd', #(data) {
+        var room = self.getRoom(data.room);
+        room.cmd(data);
+      });
     });
   }
 
