@@ -3,6 +3,7 @@ export class Room {
   function initialize(name, sockets) {
     this.sockets = sockets;
     this.name    = name;
+    this.plugins = [];
   }
 
   function say(data) {
@@ -10,8 +11,17 @@ export class Room {
   }
 
   function cmd(data) {
-    var stream = new Stream(data.msg, self);
-    stream.end('thanks for the command');
+    var stream = new Stream(self);
+    foreach (var plugin in this.plugins) {
+      if (plugin.canHandle(data.msg)) {
+        plugin.handle(data.msg, stream);
+      } else {
+        stream.error('cmd not found');
+      }
+    }
   }
 
+  function addPlugin(plugin) {
+    this.plugins.push(plugin);
+  }
 }
