@@ -52,6 +52,9 @@ class Room {
     this.$input   = this.$.find('.cmd-input');
     this.$cmdPane = this.$.find('.cmd-pane');
 
+    this.historyIdx = 0;
+    this.history  = [];
+
     var $li = $(tab(this));
 
     $('#room-tabs').append($li);
@@ -74,6 +77,8 @@ class Room {
     var val = this.$input.val();
     var m = val.match(/^\!([^\d].*)$/);
     if (m) {
+      this.historyIdx = 0;
+      this.history.push(val);
       this.cmd(m[1]);
     } else {
       this.send(val)
@@ -132,6 +137,9 @@ class App {
     }).on('mouseleave', '.cmd-executed', #{
       var cmdId = $(this).data('cmdid');
       $('.cmd-' + cmdId).siblings().show();
+    }).on('click', '.cmd-executed', #{
+      var cmd = $(this).find('a').html();
+      $(this).closest('.room').find('.cmd-input').val('!' + cmd).focus();
     });
 
     $s.on('connected', function(data) { self.join('front') });

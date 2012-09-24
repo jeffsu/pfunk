@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+require('mochiscript');
+var Server = require('../lib/server');
+var server = new Server();
+var path   = require('path');
+var configFile = path.join(process.cwd(), process.argv[2]);
+require(configFile)(server);

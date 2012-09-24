@@ -15,8 +15,6 @@ module.exports = function (server) {
       return 'ls ' + JSON.stringify(m[1]);
     });
 
-
   var frontDeploy = server.room('front-deploy');
-
   server.listen(3000);
 };

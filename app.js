@@ -2,8 +2,6 @@
 /**
  * Module dependencies.
  */
-require('mochiscript');
+process.argv[2] = "./config";
+require('./bin/pfunk');
 
-var Server = require('./lib/server');
-var server = new Server();
-require('./config')(server);
