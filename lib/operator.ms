@@ -5,6 +5,7 @@ export class Operator {
     this.io = require('socket.io').listen(app);
     this.setupIO(app, this.io);
     this.rooms = {};
+    this.idx = 0;
   }
 
   function addRoom(name) {
@@ -23,7 +24,8 @@ export class Operator {
       });
 
       socket.on('cmd', #(data) {
-        var room = self.getRoom(data.room);
+        var room   = self.getRoom(data.room);
+        data.cmdId = self.idx++;
         room.cmd(data);
       });
     });

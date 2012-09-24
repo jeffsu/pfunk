@@ -16,17 +16,19 @@ export class Room {
 
   function cmd(data) {
     this.socket().emit('cmd-executed', data);
-    var stream = new Stream(self);
+    var stream = new Stream(self, data.cmdId);
+    var handled = false;
     foreach (var plugin in this.plugins) {
       if (plugin.canHandle(data.msg)) {
         plugin.handle(data.msg, stream);
-      } else {
-        stream.error('cmd not found');
-      }
+        handled = true;
+      } 
     }
+
+    if (!handled) stream.error('cmd not found');
   }
 
-  function addPlugin(plugin) {
+  function plugin(plugin) {
     this.plugins.push(plugin);
   }
 }

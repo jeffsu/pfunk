@@ -10,7 +10,7 @@ export class Server {
     });
   }
 
-  function addRoom(name) {
+  function room(name) {
     return this.operator.addRoom(name);
   }
 

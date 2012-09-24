@@ -1,16 +1,15 @@
-h1 PFunk
-div Username:
-input#username
-select#join
-  option(value="") Join Room
-  option(value="front") front
-  option(value="front-deploy") front deploy
+form.form-horizontal
+  span Username:
+  input#username
+  select#join
+    option(value="") Join Room
+    option(value="front") front
+    option(value="front-deploy") front deploy
   
-.tabble.tabs-left
+.tababble.tabs-left
   ul.nav.nav-tabs#room-tabs
   .tab-content#rooms
-
 script(type='text/javascript')
   var host = 'http://localhost';
   var port = 3000;
-  var app = new App(host, port);
+  var APP = new App(host, port);
