@@ -5,9 +5,25 @@ class Room {
     var template = jade.compile(<<END);
       .room
         h3= name
-        .pane
+        table.table
+          tr
+            td.pane(width="70%")
+            td.cmd-pane
         .form
           input(type='text')
+    END
+
+    var tab = jade.compile(<<END);
+      li: a= name
+    END
+
+    var cmdReceive = jade.compile(<<END);
+      .cmd-receive= msg
+    END
+
+    var receive = jade.compile(<<END);
+      i.username= username + ':'
+      .receive= msg
     END
   }
 
@@ -15,10 +31,19 @@ class Room {
     this.name = name;
 
     this.$ = $(template(this));
-    this.$pane = this.$.find('.pane');
-    this.$form = this.$.find('.form');
+    this.$pane  = this.$.find('.pane');
+    this.$form  = this.$.find('.form');
     this.$input = this.$.find('input');
+    this.$cmdPane = this.$.find('.cmd-pane');
+
+    var $li = $(tab(this));
+    $('#room-tabs').append($li);
     $('#rooms').append(this.$);
+
+    function select() { self.$.show().siblings().hide(); }
+
+    $li.on('click', select);
+    select();
 
     this.$input.keypress(#(e) {
       if (e.which == 13) 
@@ -38,22 +63,24 @@ class Room {
     this.$input.val('');
   }
 
+  function newData(msg) {
+    return { room: this.name, msg: msg, username: $('#username').val() };
+  }
+
   function send(msg) {
-    $s.emit('say', { room: this.name, msg: msg });
+    $s.emit('say', this.newData(msg));
   }
 
   function cmd(msg) {
-    $s.emit('cmd', { room: this.name, msg: msg });
+    $s.emit('cmd', this.newData(msg));
   }
 
-  function cmdReceive(cmd) {
-    var $div = $('<div class="cmd" />').html(msg);
-    this.$pane.append($div);
+  function cmdReceive(data) {
+    this.$pane.append(cmdReceive(data));
   }
 
-  function receive(msg) {
-    var $div = $('<div />').html(msg);
-    this.$pane.append($div);
+  function receive(data) {
+    this.$cmdPane.append(receive(data));
   }
 }
 
@@ -67,7 +94,12 @@ class App {
 
     $s.on('receive', function(data) {
       var room = self.rooms[data.room];
-      room.receive(data.msg);
+      room.receive(data);
+    });
+
+    $s.on('cmd-receive', #(data) {
+      var room = self.rooms[data.room];
+      room.cmdReceive(data);
     });
 
     $('#join').change(#{
