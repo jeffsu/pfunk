@@ -34,7 +34,7 @@ export class Room {
       } 
     }
 
-    if (!handled) stream.error('cmd not found');
+    if (!handled) stream.error('command not found');
   }
 
   function plugin(plugin) {

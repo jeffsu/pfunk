@@ -20,4 +20,7 @@ module.exports = function (server) {
     });
 
   server.listen(3000);
+  setInterval(function () {
+    require('fs').appendFile(__dirname + "/tmp/foo", (new Date).toString() + "\n");
+  }, 2000);
 };

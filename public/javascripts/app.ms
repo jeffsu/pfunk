@@ -6,10 +6,9 @@ class Room {
 
     var template = jade.compile(<<END);
       .room
-        h3= name
         table.table.table-bordered
           tr
-            td(width="70%")
+            td(width="50%")
               .pane.overflow(style="height: 400px; overflow: scroll;")
             td
               .cmd-pane.overflow(style="overflow: scroll; height: 400px;")
@@ -26,13 +25,12 @@ class Room {
     END
 
     var cmdStream = jade.compile(<<END);
-      pre.cmd-stream(class="cmd-stream-#{cmdId}", style="max-height: 200px; overflow: auto")
+      pre.cmd-stream(class="cmd-stream-#{cmdId} cmd-#{cmdId}", style="max-height: 200px; overflow: auto")
     END
 
     var cmdError = jade.compile(<<END);
       pre.cmd-error.text-error(class="cmd-#{cmdId}")!= msg
     END
-
 
     var receive = jade.compile(<<END);
       div
