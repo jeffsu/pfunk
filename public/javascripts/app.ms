@@ -17,7 +17,7 @@ class Room {
     END
 
     var tab = jade.compile(<<END);
-      li: a= name
+      li: a(href="#")= name
     END
 
     var cmdReceive = jade.compile(<<END);
