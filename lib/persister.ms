@@ -48,7 +48,6 @@ export class Persister {
     query = query || {};
     this.db.collection(name, #(err, collection){
       collection.find(query).each(#(err, item) {
-        console.log(arguments);
         if (!err) cb(item);
       });
     });
@@ -58,7 +57,7 @@ export class Persister {
     if (!this.db) return;
 
     var query = { timestamp: { $gte: from, $lt:  to } }
-    this.retrieve(name, {}, cb);
+    this.retrieve(name, query, cb);
   }
 
   function wrap(type, data) {

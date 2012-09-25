@@ -30,6 +30,7 @@ export class Room {
   }
 
   function cmd(data) {
+    this.persister.write('cmd-executed', data);
     this.socket().emit('cmd-executed', data);
     var stream = new Stream(this, data.cmdId, this.filters, this.persister);
     var handled = false;

@@ -8,11 +8,11 @@ export class Stream {
 
   function write(msg) {
     var data =  { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId };
-    this.emit('cmd-recieve', data);
+    this.emit('cmd-receive', data);
   }
 
   function writeStream(msg) {
-   this.emit('cmd-stream', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId });
+   this.emit('cmd-stream', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId }, true);
   }
 
   function end(msg) {
@@ -23,8 +23,8 @@ export class Stream {
     if (msg) this.emit('cmd-error', { msg: this.filters.error(msg), room: self.room.name, cmdId: this.cmdId });
   }
 
-  function emit(type, data) {
-    this.persister.write(type, data);
+  function emit(type, data, ignorePersist) {
+    if (!ignorePersist) this.persister.write(type, data);
     this.room.sockets.emit(type, data);
   }
 }

@@ -3,6 +3,7 @@ var $s;
 class Room {
   private {
     var ENTER = 13;
+    var MIN = 60000;
 
     var template = jade.compile(<<END);
       .room
@@ -78,7 +79,7 @@ class Room {
     });
 
     var now = (new Date).getTime();
-    $s.emit('replay', { room: this.name, from: now - 360000, to: now });
+    $s.emit('replay', { room: this.name, from: now - (MIN*60), to: now });
   }
 
   function processInput() {
@@ -174,6 +175,9 @@ class App {
     }).on('mouseleave', '.cmd-executed', #{
       var cmdId = $(this).data('cmdid');
       $('.cmd-' + cmdId).siblings().show();
+      var $pane = $('.cmd-' + cmdId).closest('div');
+      $pane.animate({ scrollTop: $pane[0].scrollHeight });
+     
     }).on('click', '.cmd-executed', #{
       var cmd = $(this).find('a').html();
       $(this).closest('.room').find('.cmd-input').val('!' + cmd).focus();
@@ -187,6 +191,7 @@ class App {
     });
 
     $s.on('cmd-receive', #(data) {
+      console.log(data);
       var room = self.rooms[data.room];
       room.cmdReceive(data);
     });
@@ -202,6 +207,7 @@ class App {
     });
 
     $s.on('cmd-executed', #(data) {
+      console.log(data);
       var room = self.rooms[data.room];
       room.cmdExecuted(data);
     });
