@@ -22,7 +22,10 @@ class Room {
     END
 
     var cmdReceive = jade.compile(<<END);
-      pre.cmd-receive(class="cmd-#{cmdId}")!= msg
+      if output == 'html'
+        .cmd-receive!= html
+      else
+        pre.cmd-receive(class="cmd-#{cmdId}")!= msg
     END
 
     var cmdStream = jade.compile(<<END);
@@ -191,7 +194,6 @@ class App {
     });
 
     $s.on('cmd-receive', #(data) {
-      console.log(data);
       var room = self.rooms[data.room];
       room.cmdReceive(data);
     });
@@ -207,7 +209,6 @@ class App {
     });
 
     $s.on('cmd-executed', #(data) {
-      console.log(data);
       var room = self.rooms[data.room];
       room.cmdExecuted(data);
     });
