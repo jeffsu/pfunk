@@ -16,7 +16,7 @@ export class Stream {
   }
 
   function endHTML(html) {
-    this.emit('cmd-receive', { msg: msg, room: self.room.name, cmdId: this.cmdId, output: 'html' }, true);
+    this.emit('cmd-receive', { msg: html, room: self.room.name, cmdId: this.cmdId, output: 'html' }, true);
   }
 
   function end(msg) {

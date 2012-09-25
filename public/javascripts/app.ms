@@ -21,7 +21,7 @@ class Room {
 
     var cmdReceive = jade.compile(<<END);
       if output == 'html'
-        .cmd-receive!= html
+        .cmd-receive!= msg
       else
         pre.cmd-receive(class="cmd-#{cmdId}")!= msg
     END
