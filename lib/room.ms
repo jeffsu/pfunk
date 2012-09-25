@@ -4,8 +4,9 @@ var Encoder = require('node-html-encoder').Encoder;
 var encoder = new Encoder('entity');
 
 export class Room {
-  function initialize(name, sockets) {
+  function initialize(name, sockets, persister) {
     this.sockets = sockets;
+    this.persister = persister;
     this.name    = name;
     this.plugins = [];
     this.filters = new Filters();
@@ -20,6 +21,7 @@ export class Room {
 
   function say(data) {
     data.msg = this.filters.chat(data.msg);
+    this.persister.write(self.name, data);
     this.socket().emit('receive', data);
   }
 

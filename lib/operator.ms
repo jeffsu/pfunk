@@ -1,15 +1,16 @@
 var Room = require('./room');
 
 export class Operator {
-  function initialize(app) {
+  function initialize(app, persister) {
     this.io = require('socket.io').listen(app);
+    this.persister = persister;
     this.setupIO(app, this.io);
     this.rooms = {};
     this.idx = 0;
   }
 
   function addRoom(name) {
-    return this.rooms[name] = new Room(name, this.io.sockets);
+    return this.rooms[name] = new Room(name, this.io.sockets, self.persister);
   }
 
   function setupIO(app, io) {

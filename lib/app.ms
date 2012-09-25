@@ -8,7 +8,6 @@ module.exports.createApp = #(config) {
 
   // Configuration
   app.configure(function(){
-    console.log(dir);
     app.set('views', dir + '/views');
     app.set('view engine', 'jade');
     app.set("view options", { pretty: true });

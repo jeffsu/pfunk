@@ -2,16 +2,16 @@ var Operator  = require('./operator');
 var Persister = require('./persister');
 
 export class Server {
-  include $m.EventEmitter;
 
   function initialize() {
     // Routes
     this.app = require('./app').createApp();
-    this.operator = new Operator(this.app);
 
     this.app.get('/', function (req, res, next) {
       res.render('rooms', { title: 'pfunk' })
     });
+    this.persister = new Persister();
+    this.operator = new Operator(this.app);
   }
 
   function room(name) {
@@ -33,6 +33,6 @@ export class Server {
   }
   
   function persist(host, port) {
-    self.persister = new Persister(host, port);
+    this.persister.connect(host, port);
   }
 }

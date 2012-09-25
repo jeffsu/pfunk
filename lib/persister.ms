@@ -5,8 +5,11 @@ var mongo    = require('mongodb'),
 export class Persister {
   include $m.EventEmitter;
 
-  function initialize(options) {
+  function initialize() {
     this.isConnected = false;
+  }
+
+  function connect(options) { 
     var name = options.name || 'pfunk';
     var host = options.host || 'localhost';
     var port = options.port || 27017;
@@ -26,19 +29,37 @@ export class Persister {
     });
   }
 
-  function add(name, data) {
+
+  function write(name, data) {
     this.db.collection(name, #(err, collection){
-      collection.insert(data);
+      collection.insert(self.timestamp(data));
     });
   }
 
-  function retrieve(name, query) {
+  function retrieve(name, query, cb) {
     query = query || {};
     this.db.collection(name, #(err, collection){
       collection.find(query).toArray(function(err, items) {
         console.log(items);
       });
     });
+  }
+
+  function getDateRange(name, from, to, cb) {
+    var query = {
+      timestamp: {
+        $gte: from,
+        $lt:  to
+      }
+    }
+    this.retrieve(name, query, cb);
+  }
+
+  function timestamp(data) {
+    if (!data.timestamp) {
+      data['timestamp'] = new Date();
+    }
+    return data;
   }
 }
 
