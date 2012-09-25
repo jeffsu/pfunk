@@ -1,23 +1,30 @@
 export class Stream {
-  function initialize(room, cmdId, filters) {
+  function initialize(room, cmdId, filters, persister) {
     this.room  = room;
     this.cmdId = cmdId;
     this.filters = filters;
+    this.persister = persister;
   }
 
   function write(msg) {
-    this.room.sockets.emit('cmd-receive', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId });
+    var data =  { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId };
+    this.emit('cmd-recieve', data);
   }
 
   function writeStream(msg) {
-    this.room.sockets.emit('cmd-stream', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId });
+   this.emit('cmd-stream', { msg: this.filters.write(msg), room: self.room.name, cmdId: this.cmdId });
   }
 
   function end(msg) {
-    if (msg) this.room.sockets.emit('cmd-receive', { msg: msg, room: self.room.name, cmdId: this.cmdId });
+    if (msg) this.emit('cmd-receive', { msg: msg, room: self.room.name, cmdId: this.cmdId });
   }
 
   function error(msg) {
-    if (msg) this.room.sockets.emit('cmd-error', { msg: this.filters.error(msg), room: self.room.name, cmdId: this.cmdId });
+    if (msg) this.emit('cmd-error', { msg: this.filters.error(msg), room: self.room.name, cmdId: this.cmdId });
+  }
+
+  function emit(type, data) {
+    this.persister.write(type, data);
+    this.room.sockets.emit(type, data);
   }
 }

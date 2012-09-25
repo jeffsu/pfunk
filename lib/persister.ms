@@ -6,10 +6,11 @@ export class Persister {
   include $m.EventEmitter;
 
   function initialize() {
-    this.isConnected = false;
+    this.status = 'idle';
   }
 
   function connect(options) { 
+    this.status = 'connecting';
     var name = options.name || 'pfunk';
     var host = options.host || 'localhost';
     var port = options.port || 27017;
@@ -20,6 +21,7 @@ export class Persister {
     db.open(#(err, db){
       if (!err) {
         console.log('connected to db on ' + host + ':' + port);
+        self.status = 'connected';
         self.isConnected = true;
         self.db = db;
         self.emit('connected', true);
@@ -30,36 +32,42 @@ export class Persister {
   }
 
 
-  function write(name, data) {
-    this.db.collection(name, #(err, collection){
-      collection.insert(self.timestamp(data));
+  function write(type, data) {
+    if (!this.db) return;
+    var room = data.room;
+    if (!room) return;
+
+    this.db.collection(room, #(err, collection){
+      collection.insert(self.wrap(type, data));
     });
   }
 
   function retrieve(name, query, cb) {
+    if (!this.db) return;
+
     query = query || {};
     this.db.collection(name, #(err, collection){
-      collection.find(query).toArray(function(err, items) {
-        console.log(items);
+      collection.find(query).each(#(err, item) {
+        console.log(arguments);
+        if (!err) cb(item);
       });
     });
   }
 
   function getDateRange(name, from, to, cb) {
-    var query = {
-      timestamp: {
-        $gte: from,
-        $lt:  to
-      }
-    }
-    this.retrieve(name, query, cb);
+    if (!this.db) return;
+
+    var query = { timestamp: { $gte: from, $lt:  to } }
+    this.retrieve(name, {}, cb);
   }
 
-  function timestamp(data) {
-    if (!data.timestamp) {
-      data['timestamp'] = new Date();
-    }
-    return data;
+  function wrap(type, data) {
+    return {
+      timestamp: data.timestamp || new Date(),
+      username:  data.username,
+      type:      type, 
+      data: data
+    };
   }
 }
 

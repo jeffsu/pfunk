@@ -1,12 +1,17 @@
 var Room = require('./room');
+var Persister = require('./persister');
 
 export class Operator {
-  function initialize(app, persister) {
+  function initialize(app) {
     this.io = require('socket.io').listen(app);
-    this.persister = persister;
+    this.persister = new Persister();
     this.setupIO(app, this.io);
     this.rooms = {};
     this.idx = 0;
+  }
+
+  function persist(options) {
+    this.persister.connect(options);
   }
 
   function addRoom(name) {
@@ -22,6 +27,13 @@ export class Operator {
       socket.on('say', function(data) {
         var room = self.getRoom(data.room);
         room.say(data);
+      });
+
+      socket.on('replay', function(data) {
+        var room = self.getRoom(data.room);
+        room.replay(new Date(data.from), new Date(data.to), #(d) {
+          if (d) socket.emit(d.type, d.data);
+        });
       });
 
       socket.on('cmd', #(data) {

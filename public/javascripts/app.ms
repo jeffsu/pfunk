@@ -76,6 +76,9 @@ class Room {
     this.$input.keypress(#(e) {
       if (e.which == ENTER) self.processInput();
     });
+
+    var now = (new Date).getTime();
+    $s.emit('replay', { room: this.name, from: now - 360000, to: now });
   }
 
   function processInput() {
@@ -176,9 +179,9 @@ class App {
       $(this).closest('.room').find('.cmd-input').val('!' + cmd).focus();
     });
 
-    $s.on('connected', function(data) { self.join('front') });
+    $s.on('connected', #(data) { self.join('front') });
 
-    $s.on('receive', function(data) {
+    $s.on('receive', #(data) {
       var room = self.rooms[data.room];
       room.receive(data);
     });
@@ -197,7 +200,6 @@ class App {
       var room = self.rooms[data.room];
       room.cmdStream(data);
     });
-
 
     $s.on('cmd-executed', #(data) {
       var room = self.rooms[data.room];

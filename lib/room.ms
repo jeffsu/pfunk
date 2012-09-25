@@ -5,11 +5,11 @@ var encoder = new Encoder('entity');
 
 export class Room {
   function initialize(name, sockets, persister) {
-    this.sockets = sockets;
+    this.sockets   = sockets;
     this.persister = persister;
-    this.name    = name;
-    this.plugins = [];
-    this.filters = new Filters();
+    this.name      = name;
+    this.plugins   = [];
+    this.filters   = new Filters();
 
     this.filters.write(#(msg) { return encoder.htmlEncode(msg);  });
     this.filters.error(#(msg) { return encoder.htmlEncode(msg);  });
@@ -19,15 +19,19 @@ export class Room {
     return this.sockets.in(this.name);j
   }
 
+  function replay(from, to, cb) {
+    this.persister.getDateRange(this.name, from, to, cb);
+  }
+
   function say(data) {
     data.msg = this.filters.chat(data.msg);
-    this.persister.write(self.name, data);
+    this.persister.write('receive', data);
     this.socket().emit('receive', data);
   }
 
   function cmd(data) {
     this.socket().emit('cmd-executed', data);
-    var stream = new Stream(this, data.cmdId, this.filters);
+    var stream = new Stream(this, data.cmdId, this.filters, this.persister);
     var handled = false;
     foreach (var plugin in this.plugins) {
       if (plugin.canHandle(data.msg)) {

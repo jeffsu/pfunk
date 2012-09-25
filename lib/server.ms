@@ -1,5 +1,4 @@
 var Operator  = require('./operator');
-var Persister = require('./persister');
 
 export class Server {
 
@@ -10,7 +9,7 @@ export class Server {
     this.app.get('/', function (req, res, next) {
       res.render('rooms', { title: 'pfunk' })
     });
-    this.persister = new Persister();
+
     this.operator = new Operator(this.app);
   }
 
@@ -19,10 +18,11 @@ export class Server {
   }
 
   function listen(port) {
-    if (this.persister && this.persister.isConnected) {
-      this._listen(port);
+    var persister = this.operator.persister;
+    if (persister.status == 'connecting') {
+      persister.on('connected', #{ self._listen(port); });
     } else {
-      this.persister.on('connected', #{ self._listen(port); });
+      this._listen(port);
     }
   }
 
@@ -32,7 +32,7 @@ export class Server {
     });
   }
   
-  function persist(host, port) {
-    this.persister.connect(host, port);
+  function persist(options) {
+    this.operator.persist(options);
   }
 }
