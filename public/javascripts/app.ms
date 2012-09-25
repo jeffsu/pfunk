@@ -6,13 +6,11 @@ class Room {
     var MIN = 60000;
 
     var template = jade.compile(<<END);
-      .room
-        table.table.table-bordered
-          tr
-            td(width="50%", style="background-color: #333; color: #eee")
-              .pane.overflow(style="height: 400px; overflow: scroll;")
-            td
-              .cmd-pane.overflow(style="overflow: scroll; height: 400px;")
+      .room.row-fluid
+        .span7
+          .pane.well(style="height: 400px; overflow: auto;")
+        .span5
+          .cmd-pane.well(style="overflow: auto; height: 400px;")
         .form
           input.cmd-input.span8(type="text")
     END
