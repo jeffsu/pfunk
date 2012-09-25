@@ -8,6 +8,7 @@
     , "node-html-encoder": "*"
     , "mochiscript": ">=0.6.14"
     , "socket.io": ">= 0.9.10"
+    , "mongodb": ">= 1.1.7"
   }
   , "bin": { "pfunk": "./bin/pfunk" }
 }

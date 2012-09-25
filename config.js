@@ -1,6 +1,13 @@
 var cli = require('./plugins/cli');
 
 module.exports = function (server) {
+  // configure mongo
+  server.persist({
+    name: 'pfunk',
+    host: 'localhost',
+    port: 27017
+  });
+
   var front = server.room('front');
 
   require('./plugins/gh-issues')(front, { user: 'jeffsu', repo: 'mochiscript' });

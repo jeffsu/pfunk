@@ -1,5 +1,9 @@
-var Operator = require('./operator');
+var Operator  = require('./operator');
+var Persister = require('./persister');
+
 export class Server {
+  include $m.EventEmitter;
+
   function initialize() {
     // Routes
     this.app = require('./app').createApp();
@@ -15,9 +19,20 @@ export class Server {
   }
 
   function listen(port) {
-    this.app.listen(port, function () {
+    if (this.persister && this.persister.isConnected) {
+      this._listen(port);
+    } else {
+      this.persister.on('connected', #{ self._listen(port); });
+    }
+  }
+
+  function _listen(port) {
+    this.app.listen(port, #{
       console.log("Express server listening on port %d in %s mode", port, self.app.settings.env);
     });
-
+  }
+  
+  function persist(host, port) {
+    self.persister = new Persister(host, port);
   }
 }
