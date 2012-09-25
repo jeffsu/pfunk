@@ -8,7 +8,7 @@ class Room {
       .room
         table.table.table-bordered
           tr
-            td(width="50%")
+            td(width="50%", style="background-color: #333; color: #eee")
               .pane.overflow(style="height: 400px; overflow: scroll;")
             td
               .cmd-pane.overflow(style="overflow: scroll; height: 400px;")
@@ -56,11 +56,14 @@ class Room {
 
     this.historyIdx = 0;
     this.history  = [];
+    this.lastTime = null;
 
     var $li = $(tab(this));
 
     $('#room-tabs').append($li);
     $('#rooms').append(this.$);
+
+    setInterval(#{ self.showTime() }, 5000);
 
     function select() { 
       $li.addClass('active').siblings().removeClass('active');
@@ -116,8 +119,17 @@ class Room {
     this.scrollDown(this.$cmdPane);
   }
 
+  function showTime() {
+    if (!this.lastTime) return;
+    var delta = (new Date).getTime() - this.lastTime;
+    if (delta > 5000 && delta < 10000) {
+      this.$pane.append("<div class='time'><i>" + (new Date(this.lastTime)).toString() + "</i></div>");
+      this.scrollDown(this.$pane);
+    }
+  }
 
   function cmdExecuted(data) {
+    this.lastTime = (new Date).getTime();
     this.$pane.append(cmdExecuted(data));
     this.scrollDown(this.$pane);
   }
@@ -141,6 +153,7 @@ class Room {
   }
 
   function receive(data) {
+    this.lastTime = (new Date).getTime();
     this.$pane.append(receive(data));
     this.scrollDown(this.$pane);
   }
