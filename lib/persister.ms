@@ -36,14 +36,11 @@ export class Persister {
     });
   }
 
-
-  function write(type, data) {
+  function write(table, data) {
     if (!this.db) return;
-    var room = data.room;
-    if (!room) return;
 
-    this.db.collection(room, #(err, collection){
-      collection.insert(self.wrap(type, data));
+    this.db.collection(table, #(err, collection){
+      collection.insert(data);
     });
   }
 
@@ -65,13 +62,5 @@ export class Persister {
     this.retrieve(name, query, cb);
   }
 
-  function wrap(type, data) {
-    return {
-      timestamp: data.timestamp || new Date(),
-      username:  data.username,
-      type:      type, 
-      data: data
-    };
-  }
 }
 

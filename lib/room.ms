@@ -25,12 +25,12 @@ export class Room {
 
   function say(data) {
     data.msg = this.filters.chat(data.msg);
-    this.persister.write('receive', data);
+    this.persister.write(data.room, self.wrap('receive', data));
     this.socket().emit('receive', data);
   }
 
   function cmd(data) {
-    this.persister.write('cmd-executed', data);
+    this.persister.write(data.room, self.wrap('cmd-executed', data));
     this.socket().emit('cmd-executed', data);
     var stream = new Stream(this, data.cmdId, this.filters, this.persister);
     var handled = false;
@@ -46,5 +46,14 @@ export class Room {
 
   function plugin(plugin) {
     this.plugins.push(plugin);
+  }
+
+  function wrap(type, data) {
+    return {
+      timestamp: data.timestamp || new Date(),
+      username:  data.username,
+      type:      type, 
+      data: data
+    };
   }
 }

@@ -13,6 +13,7 @@ module.exports = function (server) {
   require('./plugins/gh-issues')(front, { user: 'jeffsu', repo: 'mochiscript' });
   require('./plugins/time')(front);
   require('./plugins/health-check')(front);
+  require('./plugins/tags')(front, { table: 'tags' });
 
   require('./plugins/cli')(front, /^ls\s+/,
     function (msg) { 
