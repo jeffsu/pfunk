@@ -9,6 +9,12 @@ export class Persister {
     this.status = 'idle';
   }
 
+  function ready(cb) {
+    if (this.status == 'connecting') 
+      this.on('connected', #{ cb() });
+    else cb();
+  }
+
   function connect(options) { 
     this.status = 'connecting';
     var name = options.name || 'pfunk';
