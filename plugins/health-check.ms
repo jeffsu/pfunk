@@ -1,10 +1,22 @@
 var request = require('request');
 var jade    = require('jade');
 var template = jade.compile(<<END);
-  table
+  ul.archetypes
     each server in servers
-      tr
-        td(style="color: #{server.color}")= server.name
+      li(style="color: #{server.color}")
+        = server.name
+        ul
+          each instance in server.instances
+            li
+              a(style="color: #{instance.color}", href="#{instance.ipAddress}")= instance.ipAddress
+          
+  script(type='text/javascript')
+    $(function() {
+      $('.archetypes li').each(function() {
+        $(this).popover();
+      });
+    });
+    
 END
 
 module.exports = function (room) {
