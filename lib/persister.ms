@@ -28,7 +28,6 @@ export class Persister {
       if (!err) {
         console.log('connected to db on ' + host + ':' + port);
         self.status = 'connected';
-        self.isConnected = true;
         self.db = db;
         self.emit('connected', true);
       } else {

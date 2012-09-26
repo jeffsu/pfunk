@@ -25,12 +25,6 @@ export class Server {
         console.log("Express server listening on port %d in %s mode", port, self.app.settings.env);
       });
     });
-
-    if (persister.status == 'connecting') {
-      persister.on('connected', #{ self._listen(port); });
-    } else {
-      this._listen(port);
-    }
   }
 
   function persist(options) {
