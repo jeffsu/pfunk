@@ -1,32 +1,39 @@
 module.exports = #(room, options) {
+  newPlugin(room, options);
+};
 
+function newPlugin(room, options) {
+  var currentTag  = null;
+  var currentTime = null;
+
+  /*
+   * !tag scrum
+   * !tag end
+   */
   room.plugin({
-    canHandle: #(msg) { => msg.match(/^tag\s+(.*)$/i); },
+    canHandle: #(msg) { 
+      return msg.match(currentTag ? /^tag\s+end$/i : /^tag\s+(.*)$/i); 
+    },
+
     handle: #(msg, stream) {
-
-      var m = msg.match(/^tag\s+(\w+)\s+(\w+)$/i);
-      var command = m[1];
-      var tag     = m[2];
-
-      if (!m[1]) { 
-        stream.error(<<END);
-          USAGE: ! record [tag] 
-          special characters not allowed
-        END
-      }
-
-      switch (command) {
-        case: "start":
-          room.persister.write(options.table, { tag: m[1], begin: new Date(), end: null });
-        break;
-        case: "end":
-          //room.persister.update(options.table, { tag: m[1], begin: new Date(), end: null });
-        break;
-        case: "list":
-        break;
-        case: "show":
-        break;
+      var m = msg.match(/^tag\s+(.*)\s*$/);
+      if (m) {
+        var cmd = m[1];
+        if (cmd == 'end' && currentTag) {
+          saveTag(room.name, currentTag, currenTime, (new Date));
+          stream.end('tagged ' + currentTag);
+          currentTag = null;
+        } else {
+          currentTag = cmd; 
+          currentTime = (new Date);
+        }
       }
     }
   });
 }
+
+function saveTag(roomName, tag, start, end) {
+
+}
+
+
