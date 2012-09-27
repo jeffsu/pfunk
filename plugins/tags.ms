@@ -12,13 +12,19 @@ function newPlugin(room, options) {
    */
   room.plugin({
     canHandle: #(msg) { 
-      return msg.match(currentTag ? /^tag\s+end$/i : /^tag\s+(.*)$/i); 
+      return msg.match(/^tag\s+(.*)$/i); 
     },
 
     handle: #(msg, stream) {
       var m = msg.match(/^tag\s+(.*)\s*$/);
       if (m) {
         var cmd = m[1];
+        if (cmd == 'end' && !currentTag) 
+          return stream.error("Can't call 'tag end' without calling 'tag <tag>' first");
+
+        if (currentTag && cmd != 'end') 
+          return stream.error("Must end tag ('tag end') before starting a new tag");
+
         if (cmd == 'end' && currentTag) {
           saveTag(room.name, currentTag, currenTime, (new Date));
           stream.end('tagged ' + currentTag);
