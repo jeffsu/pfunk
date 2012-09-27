@@ -1,10 +1,7 @@
 module.exports = #(room, options) {
-  newPlugin(room, options);
-};
-
-function newPlugin(room, options) {
   var currentTag  = null;
   var currentTime = null;
+  var table       = options.table || 'tags';
 
   /*
    * !tag scrum
@@ -26,9 +23,10 @@ function newPlugin(room, options) {
           return stream.error("Must end tag ('tag end') before starting a new tag");
 
         if (cmd == 'end' && currentTag) {
-          saveTag(room.name, currentTag, currenTime, (new Date));
+          saveTag(room, table, currentTag, currentTime, (new Date));
           stream.end('tagged ' + currentTag);
-          currentTag = null;
+          currentTag  = null;
+          currentTime = null;
         } else {
           currentTag = cmd; 
           currentTime = (new Date);
@@ -38,8 +36,14 @@ function newPlugin(room, options) {
   });
 }
 
-function saveTag(roomName, tag, start, end) {
-
+function saveTag(room, table, tag, start, end) {
+  var data = { 
+    room: room.name,
+    tag: tag,
+    start: start,
+    end: end
+  }
+  room.persister.write(table, data)
 }
 
 

@@ -62,5 +62,20 @@ export class Persister {
     this.retrieve(name, query, cb);
   }
 
+  function ensureIndices() {
+    var indices = {};
+    var args  = Array.prototype.slice.call(arguments);
+    var table = args.shift();
+
+    foreach (var a in arguments) {
+      indices[a] = 1;
+    } 
+    if (this.db[table]) {
+      this.db[table].ensureIndex(indices);
+    } else {
+      throw('table does not exist');
+    }
+  }
+
 }
 
