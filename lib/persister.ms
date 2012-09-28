@@ -44,11 +44,11 @@ export class Persister {
     });
   }
 
-  function retrieve(name, query, cb) {
+  function retrieve(table, query, cb) {
     if (!this.db) return;
 
     query = query || {};
-    this.db.collection(name, #(err, collection){
+    this.db.collection(table, #(err, collection){
       collection.find(query).each(#(err, item) {
         if (!err) cb(item);
       });

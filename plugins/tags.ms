@@ -21,6 +21,7 @@ module.exports = #(room, options) {
 
         if (currentTag && cmd != 'end') 
           return stream.error("Must end tag ('tag end') before starting a new tag");
+        if (cmd.match(/(list|ls)/)) return listTags(room.persister, table, stream);
 
         if (cmd == 'end' && currentTag) {
           saveTag(room, table, currentTag, currentTime, (new Date));
@@ -45,5 +46,13 @@ function saveTag(room, table, tag, start, end) {
   }
   room.persister.write(table, data)
 }
-
+ 
+function listTags(persister, table, stream) {
+  persister.retrieve(table, {}, #{
+    if($1) {
+      var output = $1.tag;
+      stream.end(output);
+    }
+  });
+}
 
