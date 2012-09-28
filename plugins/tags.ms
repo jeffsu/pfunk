@@ -22,6 +22,7 @@ module.exports = #(room, options) {
         if (currentTag && cmd != 'end') 
           return stream.error("Must end tag ('tag end') before starting a new tag");
         if (cmd.match(/(list|ls)/)) return listTags(room.persister, table, stream);
+        if (cmd.match(/show\s+(.*)$/)) return replayTags(room.persister, table, stream);
 
         if (cmd == 'end' && currentTag) {
           saveTag(room, table, currentTag, currentTime, (new Date));

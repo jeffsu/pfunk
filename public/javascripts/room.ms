@@ -14,7 +14,9 @@ class Room {
     END
 
     var tab = jade.compile(<<END);
-      li: a(href="#")= name
+      li(data-room=name): a(href="#")
+        = name
+        button.close.leave-room &times;
     END
 
     var cmdReceive = jade.compile(<<END);
@@ -58,7 +60,7 @@ class Room {
     this.history  = [];
     this.lastTime = null;
 
-    var $li = $(tab(this));
+    var $li = $(tab({ name: name }));
 
     $('#room-tabs').append($li);
     $('#rooms').append(this.$);

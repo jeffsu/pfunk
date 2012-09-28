@@ -11,7 +11,9 @@ export class Persister {
 
   function ready(cb) {
     if (this.status == 'connecting') 
-      this.on('connected', #{ cb() });
+      this.on('connected', #{ 
+        cb() 
+      });
     else cb();
   }
 
@@ -31,7 +33,7 @@ export class Persister {
         self.db = db;
         self.emit('connected', true);
       } else {
-        return new Error('could not connect to database');
+        throw new Error('could not connect to database');
       }
     });
   }
