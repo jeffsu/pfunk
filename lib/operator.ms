@@ -31,7 +31,7 @@ export class Operator {
 
       socket.on('replay', function(data) {
         var room = self.getRoom(data.room);
-        room.replay(new Date(data.from), new Date(data.to), #(d) {
+        room.replay(new Date(data.from), new Date(data.to), #(err, d) {
           if (d) socket.emit(d.type, d.data);
         });
       });

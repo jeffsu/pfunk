@@ -52,7 +52,7 @@ export class Persister {
     query = query || {};
     this.db.collection(table, #(err, collection){
       collection.find(query).each(#(err, item) {
-        if (!err) cb(item);
+        cb(err, item);
       });
     });
   }

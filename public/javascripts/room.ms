@@ -78,7 +78,10 @@ class Room {
     this.$input.keypress(#(e) {
       if (e.which == ENTER) self.processInput();
     });
+    this.replayHour();
+  }
 
+  function replayHour() {
     var now = (new Date).getTime();
     $s.emit('replay', { room: this.name, from: now - (MIN*60), to: now });
   }
