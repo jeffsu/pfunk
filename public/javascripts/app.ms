@@ -1,18 +1,22 @@
 var $s;
 
 class App {
+
   private {
     var uiVisible = false;
   }
-  function initialize(host, port) {
-    this.rooms = {};
-    this.$messenger = $('#messenger:first');
 
-    this.$tabs  = $('#room-tabs');
-    this.$panes = $('#rooms');
+  function initialize(host, port) {
 
     var serverAddress = host + ':' + port;
     $s = io.connect(serverAddress);
+
+    this.rooms = {};
+    this.members = {};
+
+    this.$messenger = $('#messenger:first');
+    this.$tabs  = $('#room-tabs');
+    this.$panes = $('#rooms');
 
     this.$panes.on('mouseenter', '.cmd-executed', #{ 
       var cmdId = $(this).data('cmdid');
@@ -64,10 +68,20 @@ class App {
       room.cmdExecuted(data);
     });
 
-    $('#join').change(#{ self.join(this.value); });
+    var $joinForm = $('#join');
+    var $joinUser  = $joinForm.find('#username');
+    var $joinRoom  = $joinForm.find('#join-room');
+    $joinForm.find('#join-room').change(#{ 
+      self.join(this.value, $joinUser.val()); 
+    });
+    $('#join').submit(#{ 
+      self.join($joinRoom.val(), $joinUser.val()); => false; 
+    });
   }
 
-  function join(name) {
+  function join(name, username) {
+    // TODO: better error handling
+    if (name == '') => alert('you must choose room');
     $s.emit('join', { room: name });
     self.rooms[name] = new Room(name);
     if (!uiVisible && _.size(self.rooms) > 0) {
@@ -78,16 +92,20 @@ class App {
   function leave(name) {
     $s.emit('leave', { room: name });
     delete this.rooms[name];
-    if (_.size(self.rooms) == 0 && uiVisible) this.hideUI();
+    if (_.size(self.rooms) == 0 && uiVisible) {
+      this.hideUI();
+    } else {
+      this.$tabs.find('a:first').tab('show');
+    }
   }
 
   function showUI() {
     uiVisible = true;
     this.$messenger.show();
   }
+
   function hideUI() {
     uiVisible = false;
     this.$messenger.hide();
   }
 }
-
